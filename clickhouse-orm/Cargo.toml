@@ -15,6 +15,3 @@ clickhouse-orm-macros = { path = "./clickhouse-orm-macros" }
 [dependencies.clickhouse]
 version = "0.13.1"
 features = ["inserter"]
-
-[workspace]
-members = ["clickhouse-orm-macros"]
