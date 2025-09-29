@@ -1,0 +1,9 @@
+max_width = 100
+hard_tabs = false
+edition = "2024"
+use_small_heuristics = "Max"
+newline_style = "Unix"
+reorder_imports = true
+normalize_comments = true
+merge_imports = true
+trailing_comma = "Always"

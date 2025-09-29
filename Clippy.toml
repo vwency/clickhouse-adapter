@@ -1,0 +1,3 @@
+warns = ["all"]
+allow = ["clippy::needless_return", "clippy::module_inception"]
+deny = ["clippy::unwrap_used", "clippy::expect_used"]
