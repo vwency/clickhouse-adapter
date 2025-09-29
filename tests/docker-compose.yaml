@@ -1,0 +1,16 @@
+services:
+  clickhouse-server:
+    image: clickhouse/clickhouse-server:latest
+    container_name: clickhouse-server
+    environment:
+      CLICKHOUSE_HOST: localhost
+      CLICKHOUSE_PORT: 8123
+      CLICKHOUSE_USER: default
+      CLICKHOUSE_PASSWORD: default
+      CLICKHOUSE_DATABASE: analytics
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    volumes:
+      - /home/clickhouse_data:/var/lib/clickhouse
+    restart: unless-stopped
