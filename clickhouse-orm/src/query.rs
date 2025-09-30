@@ -9,11 +9,7 @@ pub struct Query<T> {
 
 impl<T> Query<T> {
     pub fn new(client: Client, table_name: &'static str) -> Self {
-        Self {
-            client,
-            table_name,
-            _phantom: PhantomData,
-        }
+        Self { client, table_name, _phantom: PhantomData }
     }
 
     // Добавьте здесь методы для построения и выполнения запросов

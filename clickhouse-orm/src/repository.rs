@@ -1,6 +1,6 @@
-use serde::{Serialize, de::DeserializeOwned};
-use crate::{CHClient, error::Result};
-use crate::query::{Query, AggregateQuery};
+use crate::query::{AggregateQuery, Query};
+use crate::{error::Result, CHClient, ClickHouseTable};
+use serde::{de::DeserializeOwned, Serialize};
 
 pub struct Repository<T> {
     client: CHClient,
@@ -10,14 +10,28 @@ pub struct Repository<T> {
 
 impl<T> Repository<T>
 where
-    T: Serialize + DeserializeOwned + clickhouse::Row + crate::ClickHouseTable,
+    T: Serialize + DeserializeOwned + clickhouse::Row + ClickHouseTable,
 {
     pub fn new(client: CHClient, table_name: &'static str) -> Self {
-        Self {
-            client,
-            table_name,
-            _phantom: std::marker::PhantomData,
-        }
+        Self { client, table_name, _phantom: std::marker::PhantomData }
+    }
+
+    /// Создает таблицу если её нет (основной метод)
+    pub async fn create_table(&self) -> Result<()> {
+        let sql = T::create_table_sql();
+        self.execute_raw(sql).await
+    }
+
+    /// Удаляет таблицу
+    pub async fn drop_table(&self) -> Result<()> {
+        let sql = format!("DROP TABLE IF EXISTS {}", self.table_name);
+        self.execute_raw(&sql).await
+    }
+
+    /// Очищает таблицу
+    pub async fn truncate_table(&self) -> Result<()> {
+        let sql = format!("TRUNCATE TABLE IF EXISTS {}", self.table_name);
+        self.execute_raw(&sql).await
     }
 
     pub fn query(&self) -> Query<T> {
@@ -46,11 +60,6 @@ where
         }
         insert.end().await?;
         Ok(())
-    }
-
-    pub async fn create_table(&self) -> crate::error::Result<()> {
-        let sql = T::create_table_sql();
-        self.execute_raw(sql).await
     }
 
     pub async fn insert_stream(&self) -> Result<clickhouse::insert::Insert<T>> {
