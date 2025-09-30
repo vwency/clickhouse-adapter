@@ -20,6 +20,24 @@ pub fn clickhouse_table_derive(input: TokenStream) -> TokenStream {
     let options = TableOptions::from_derive_input(&input);
     let create_sql = generate_create_table_sql(&input, &table_name, &options);
 
+    // Определяем Engine из опций
+    let engine_value = options.engine.as_deref().unwrap_or("MergeTree");
+    let engine_expr = if engine_value.starts_with("ReplicatedMergeTree") {
+        quote! {
+            clickhouse_orm::Engine::ReplicatedMergeTree {
+                zk_path: String::new(),
+                replica: String::new(),
+            }
+        }
+    } else {
+        match engine_value {
+            "SummingMergeTree" => quote! { clickhouse_orm::Engine::SummingMergeTree },
+            "AggregatingMergeTree" => quote! { clickhouse_orm::Engine::AggregatingMergeTree },
+            "ReplacingMergeTree" => quote! { clickhouse_orm::Engine::ReplacingMergeTree },
+            _ => quote! { clickhouse_orm::Engine::MergeTree },
+        }
+    };
+
     let expanded = quote! {
         impl clickhouse_orm::ClickHouseTable for #name {
             fn table_name() -> &'static str {
@@ -27,6 +45,9 @@ pub fn clickhouse_table_derive(input: TokenStream) -> TokenStream {
             }
             fn create_table_sql() -> &'static str {
                 #create_sql
+            }
+            fn engine() -> clickhouse_orm::Engine {
+                #engine_expr
             }
         }
 
