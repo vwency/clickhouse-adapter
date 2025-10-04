@@ -1,15 +1,10 @@
+use crate::domain::errors::default::Result;
+use crate::domain::repository::repository::Repository;
 use crate::engine::{MergeTreeOps, PartInfo, ReplicaStatus, ReplicatedMergeTreeOps};
 use crate::query::{AggregateQuery, Query};
-use crate::{error::Result, CHClient, ClickHouseTable, Engine};
+use crate::{CHClient, ClickHouseTable, Engine};
 use serde::{de::DeserializeOwned, Serialize};
 use std::future::Future;
-
-pub struct Repository<T> {
-    client: CHClient,
-    table_name: &'static str,
-    engine: Engine,
-    _phantom: std::marker::PhantomData<T>,
-}
 
 impl<T> Repository<T>
 where

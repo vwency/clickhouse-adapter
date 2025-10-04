@@ -1,16 +1,15 @@
 pub mod client;
+pub mod domain;
 pub mod engine;
-pub mod error;
 pub mod query;
 pub mod repository;
-
 pub use clickhouse::Row;
 pub use clickhouse_orm_macros::ClickHouseTable;
-pub use client::CHClient;
+pub use domain::client::client::CHClient;
+pub use domain::errors::default::CHError;
+pub use domain::repository::repository::Repository;
 pub use engine::{Engine, MergeTreeOps, ReplicatedMergeTreeOps};
-pub use error::CHError;
 pub use query::{AggregateQuery, Query};
-pub use repository::Repository;
 
 pub use chrono::{DateTime, Utc};
 pub use clickhouse;
