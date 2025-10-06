@@ -1,14 +1,7 @@
+use crate::domain::query::query::Query;
 use crate::Engine;
 use clickhouse::Client;
 use std::marker::PhantomData;
-
-pub struct Query<T> {
-    client: Client,
-    table_name: &'static str,
-    engine: Engine,
-    use_final: bool,
-    _phantom: PhantomData<T>,
-}
 
 impl<T> Query<T> {
     pub fn new(client: Client, table_name: &'static str, engine: Engine) -> Self {

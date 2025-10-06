@@ -1,5 +1,3 @@
-use std::future::Future;
-
 #[derive(Debug, Clone, PartialEq)]
 pub enum Engine {
     MergeTree,

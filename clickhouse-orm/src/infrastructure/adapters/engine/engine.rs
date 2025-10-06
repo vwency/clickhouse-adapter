@@ -1,6 +1,5 @@
-pub use crate::domain::engine::{Engine, PartInfo, ReplicaStatus};
+use crate::domain::engine::Engine;
 use crate::domain::errors::default::CHError;
-use std::future::Future;
 
 pub type CHResult<T> = Result<T, CHError>;
 
@@ -20,7 +19,9 @@ impl Engine {
             Self::MergeTree
         }
     }
+}
 
+impl Engine {
     pub fn supports_optimize(&self) -> bool {
         matches!(
             self,
@@ -32,7 +33,9 @@ impl Engine {
                 | Self::ReplacingMergeTree
         )
     }
+}
 
+impl Engine {
     pub fn supports_final(&self) -> bool {
         matches!(
             self,
@@ -41,17 +44,4 @@ impl Engine {
                 | Self::VersionedCollapsingMergeTree
         )
     }
-}
-
-// MergeTree специфичные операции
-pub trait MergeTreeOps {
-    fn optimize(&self) -> impl Future<Output = CHResult<()>> + Send;
-    fn optimize_final(&self) -> impl Future<Output = CHResult<()>> + Send;
-    fn get_parts_info(&self) -> impl Future<Output = CHResult<Vec<PartInfo>>> + Send;
-}
-
-// Replicated операции
-pub trait ReplicatedMergeTreeOps {
-    fn check_replica_status(&self) -> impl Future<Output = CHResult<ReplicaStatus>> + Send;
-    fn sync_replica(&self) -> impl Future<Output = CHResult<()>> + Send;
 }

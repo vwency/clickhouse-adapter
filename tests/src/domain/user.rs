@@ -1,9 +1,10 @@
-use clickhouse_orm::{ClickHouseTable, DateTime, Deserialize, Row, Serialize, Utc};
+use clickhouse_orm::{ClickHouseTable, Deserialize, Row, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize, Row, ClickHouseTable)]
+#[table_name = "users"]
 pub struct User {
     pub id: u64,
     pub email: String,
-    pub created_at: DateTime<Utc>,
-    pub last_seen: Option<DateTime<Utc>>,
+    pub created_at: u32,        // Unix timestamp
+    pub last_seen: Option<u32>, // Unix timestamp
 }
