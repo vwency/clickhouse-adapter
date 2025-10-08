@@ -1,15 +1,12 @@
 use proc_macro::TokenStream;
 use quote::quote;
 use syn::{parse_macro_input, DeriveInput};
+mod adapters;
+mod generator;
 
-mod sql_generator;
-mod table_name;
-mod table_options;
-mod type_mapping;
-
-use sql_generator::generate_create_table_sql;
-use table_name::get_table_name;
-use table_options::TableOptions;
+use adapters::head_options_macros::table_name::get_table_name;
+use adapters::head_options_macros::table_options::TableOptions;
+use generator::sql_generator::generate_create_table_sql;
 
 #[proc_macro_derive(ClickHouseTable, attributes(table_name, clickhouse))]
 pub fn clickhouse_table_derive(input: TokenStream) -> TokenStream {
@@ -20,7 +17,6 @@ pub fn clickhouse_table_derive(input: TokenStream) -> TokenStream {
     let options = TableOptions::from_derive_input(&input);
     let create_sql = generate_create_table_sql(&input, &table_name, &options);
 
-    // Определяем Engine из опций
     let engine_value = options.engine.as_deref().unwrap_or("MergeTree");
     let engine_expr = if engine_value.starts_with("ReplicatedMergeTree") {
         quote! {
