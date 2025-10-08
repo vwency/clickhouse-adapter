@@ -1,14 +1,5 @@
+use crate::domain::engine_config::EngineConfig;
 use syn::{Attribute, Meta};
-
-#[derive(Debug, Clone)]
-pub struct EngineConfig {
-    pub engine_type: String,
-    pub zk_path: Option<String>,
-    pub replica: Option<String>,
-    pub sign_column: Option<String>,
-    pub version_column: Option<String>,
-    pub columns: Option<Vec<String>>,
-}
 
 impl EngineConfig {
     pub fn from_attributes(attrs: &[Attribute]) -> Self {
