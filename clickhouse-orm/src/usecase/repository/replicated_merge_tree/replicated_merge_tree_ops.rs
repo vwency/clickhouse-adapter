@@ -1,7 +1,7 @@
-use crate::adapters::engine::engine_options::ReplicatedMergeTreeOps;
 pub use crate::domain::engine::{Engine, PartInfo, ReplicaStatus};
 use crate::domain::errors::default::Result;
 use crate::domain::repository::repository::Repository;
+use crate::infrastructure::adapters::engine::engine_options::ReplicatedMergeTreeOps;
 use crate::ClickHouseTable;
 use serde::{de::DeserializeOwned, Serialize};
 use std::future::Future;
