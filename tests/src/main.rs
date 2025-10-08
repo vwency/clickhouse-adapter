@@ -1,3 +1,4 @@
+use clickhouse_orm::MergeTreeOps;
 use clickhouse_orm::{CHClient, ClickHouseTable};
 use tests::domain::{PageView, User};
 use tracing::{error, info, Level};
@@ -48,6 +49,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     info!("Fetched {} emails:", emails.len());
     for email in emails {
         println!("Email: {}", email);
+    }
+
+    let parts_info = users.get_parts_info().await?;
+    info!("Parts info for 'users' table:");
+    for part in parts_info {
+        println!(
+            "Partition: {}, Name: {}, Rows: {}, Bytes: {}",
+            part.partition, part.name, part.rows, part.bytes
+        );
     }
 
     Ok(())
