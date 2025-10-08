@@ -18,20 +18,28 @@ pub fn clickhouse_table_derive(input: TokenStream) -> TokenStream {
     let create_sql = generate_create_table_sql(&input, &table_name, &options);
 
     let engine_value = options.engine.as_deref().unwrap_or("MergeTree");
-    let engine_expr = if engine_value.starts_with("ReplicatedMergeTree") {
-        quote! {
+    let engine_expr = match engine_value {
+        "MergeTree" => quote! { clickhouse_orm::Engine::MergeTree },
+        "ReplicatedMergeTree" => quote! {
             clickhouse_orm::Engine::ReplicatedMergeTree {
                 zk_path: String::new(),
                 replica: String::new(),
             }
+        },
+        "SummingMergeTree" => quote! { clickhouse_orm::Engine::SummingMergeTree },
+        "AggregatingMergeTree" => quote! { clickhouse_orm::Engine::AggregatingMergeTree },
+        "CollapsingMergeTree" => quote! { clickhouse_orm::Engine::CollapsingMergeTree },
+        "VersionedCollapsingMergeTree" => {
+            quote! { clickhouse_orm::Engine::VersionedCollapsingMergeTree }
         }
-    } else {
-        match engine_value {
-            "SummingMergeTree" => quote! { clickhouse_orm::Engine::SummingMergeTree },
-            "AggregatingMergeTree" => quote! { clickhouse_orm::Engine::AggregatingMergeTree },
-            "ReplacingMergeTree" => quote! { clickhouse_orm::Engine::ReplacingMergeTree },
-            _ => quote! { clickhouse_orm::Engine::MergeTree },
-        }
+        "ReplacingMergeTree" => quote! { clickhouse_orm::Engine::ReplacingMergeTree },
+        "GraphiteMergeTree" => quote! { clickhouse_orm::Engine::GraphiteMergeTree },
+        "Log" => quote! { clickhouse_orm::Engine::Log },
+        "TinyLog" => quote! { clickhouse_orm::Engine::TinyLog },
+        "Memory" => quote! { clickhouse_orm::Engine::Memory },
+        "Buffer" => quote! { clickhouse_orm::Engine::Buffer },
+        "Distributed" => quote! { clickhouse_orm::Engine::Distributed },
+        _ => quote! { clickhouse_orm::Engine::MergeTree }, // fallback на MergeTree
     };
 
     let expanded = quote! {
