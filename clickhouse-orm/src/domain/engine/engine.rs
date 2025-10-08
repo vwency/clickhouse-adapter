@@ -14,3 +14,16 @@ pub enum Engine {
     Buffer,
     Distributed,
 }
+pub struct MergeTreeFlag;
+pub struct ReplicatedMergeTreeFlag;
+pub struct SummingMergeTreeFlag;
+pub struct AggregatingMergeTreeFlag;
+pub struct CollapsingMergeTreeFlag;
+pub struct VersionedCollapsingMergeTreeFlag;
+pub struct ReplacingMergeTreeFlag;
+pub struct GraphiteMergeTreeFlag;
+pub struct LogFlag;
+pub struct TinyLogFlag;
+pub struct MemoryFlag;
+pub struct BufferFlag;
+pub struct DistributedFlag;

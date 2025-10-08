@@ -20,3 +20,5 @@ pub trait ClickHouseTable {
     fn create_table_sql() -> &'static str;
     fn engine() -> Engine;
 }
+
+pub use domain::engine::{MergeTreeFlag, ReplicatedMergeTreeFlag};

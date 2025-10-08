@@ -4,5 +4,7 @@ pub mod replica_status;
 
 // ✅ Реэкспорт, чтобы всё было доступно через `crate::domain::engine::*`
 pub use engine::Engine;
+pub use engine::MergeTreeFlag;
+pub use engine::ReplicatedMergeTreeFlag;
 pub use part_info::PartInfo;
 pub use replica_status::ReplicaStatus;

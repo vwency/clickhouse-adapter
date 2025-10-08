@@ -1,5 +1,5 @@
-use clickhouse_orm::MergeTreeOps;
-use clickhouse_orm::{CHClient, ClickHouseTable};
+use clickhouse_orm::merge_tree::merge_tree_ops::MergeTreeOps;
+use clickhouse_orm::CHClient;
 use tests::domain::{PageView, User};
 use tracing::{error, info, Level};
 use tracing_subscriber;
@@ -38,7 +38,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     let rows = users.query().fetch_all().await?;
-
     info!("Fetched {} users from DB:", rows.len());
     for u in rows {
         println!("{:?}", u);

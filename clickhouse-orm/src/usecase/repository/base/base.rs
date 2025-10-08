@@ -5,12 +5,11 @@ use crate::domain::repository::repository::Repository;
 use crate::usecase::query::query::AggregateQuery;
 use crate::{CHClient, ClickHouseTable};
 use serde::{de::DeserializeOwned, Serialize};
-impl<T> Repository<T>
+impl<T, F> Repository<T, F>
 where
     T: Serialize + DeserializeOwned + clickhouse::Row + ClickHouseTable,
 {
-    pub fn new(client: CHClient, table_name: &'static str) -> Self {
-        let engine = T::engine();
+    pub fn new(client: CHClient, table_name: &'static str, engine: Engine) -> Self {
         Self { client, table_name, engine, _phantom: std::marker::PhantomData }
     }
 

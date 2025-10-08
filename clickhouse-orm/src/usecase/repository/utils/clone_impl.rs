@@ -1,7 +1,7 @@
 pub use crate::domain::engine::{Engine, PartInfo, ReplicaStatus};
 use crate::domain::repository::repository::Repository;
 
-impl<T> Clone for Repository<T> {
+impl<T, F> Clone for Repository<T, F> {
     fn clone(&self) -> Self {
         Self {
             client: self.client.clone(),

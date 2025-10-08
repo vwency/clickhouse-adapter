@@ -1,3 +1,4 @@
+use crate::domain::engine::ReplicatedMergeTreeFlag;
 pub use crate::domain::engine::{Engine, PartInfo, ReplicaStatus};
 use crate::domain::errors::default::Result;
 use crate::domain::repository::repository::Repository;
@@ -6,7 +7,7 @@ use crate::ClickHouseTable;
 use serde::{de::DeserializeOwned, Serialize};
 use std::future::Future;
 
-impl<T> ReplicatedMergeTreeOps for Repository<T>
+impl<T> ReplicatedMergeTreeOps for Repository<T, ReplicatedMergeTreeFlag>
 where
     T: Serialize + DeserializeOwned + clickhouse::Row + ClickHouseTable,
 {

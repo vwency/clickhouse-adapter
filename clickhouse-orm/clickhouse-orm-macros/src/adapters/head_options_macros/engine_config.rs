@@ -1,6 +1,5 @@
 use crate::domain::engine_config::EngineConfig;
 use syn::{Attribute, Meta};
-
 impl EngineConfig {
     pub fn from_attributes(attrs: &[Attribute]) -> Self {
         let mut config = EngineConfig {
@@ -18,35 +17,39 @@ impl EngineConfig {
             }
 
             if let Meta::List(ref meta_list) = attr.meta {
-                for nested in meta_list.tokens.clone() {
-                    let nested_str = nested.to_string();
+                let tokens_str = meta_list.tokens.to_string();
 
-                    if nested_str.starts_with("engine") {
-                        config.engine_type = Self::extract_string_value(&nested_str, "engine");
-                    } else if nested_str.starts_with("zk_path") {
-                        config.zk_path = Some(Self::extract_string_value(&nested_str, "zk_path"));
-                    } else if nested_str.starts_with("replica") {
-                        config.replica = Some(Self::extract_string_value(&nested_str, "replica"));
-                    } else if nested_str.starts_with("sign_column") {
-                        config.sign_column =
-                            Some(Self::extract_string_value(&nested_str, "sign_column"));
-                    } else if nested_str.starts_with("version_column") {
-                        config.version_column =
-                            Some(Self::extract_string_value(&nested_str, "version_column"));
+                for pair in tokens_str.split(',') {
+                    let pair = pair.trim();
+
+                    if let Some((key, value)) = pair.split_once('=') {
+                        let key = key.trim();
+                        let value =
+                            value.trim().trim_start_matches('"').trim_end_matches('"').trim();
+
+                        match key {
+                            "engine" => {
+                                config.engine_type = value.to_string();
+                            }
+                            "zk_path" => {
+                                config.zk_path = Some(value.to_string());
+                            }
+                            "replica" => {
+                                config.replica = Some(value.to_string());
+                            }
+                            "sign_column" => {
+                                config.sign_column = Some(value.to_string());
+                            }
+                            "version_column" => {
+                                config.version_column = Some(value.to_string());
+                            }
+                            _ => {}
+                        }
                     }
                 }
             }
         }
 
         config
-    }
-
-    fn extract_string_value(token_str: &str, key: &str) -> String {
-        token_str
-            .trim_start_matches(key)
-            .trim_start_matches('=')
-            .trim_matches('"')
-            .trim()
-            .to_string()
     }
 }
