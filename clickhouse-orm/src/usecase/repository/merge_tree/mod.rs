@@ -1,1 +1,1 @@
-pub mod merge_tree_ops;
+pub mod merge_tree;

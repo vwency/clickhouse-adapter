@@ -1,1 +1,1 @@
-pub mod replicated_merge_tree_ops;
+pub mod replicated_merge_tree;
