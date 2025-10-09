@@ -12,17 +12,10 @@ where
     T: Serialize + DeserializeOwned + clickhouse::Row + ClickHouseTable,
 {
     fn check_replica_status(&self) -> impl Future<Output = Result<ReplicaStatus>> + Send {
-        let engine = self.engine.clone();
         let table_name = self.table_name.to_string();
         let client = self.client.clone();
 
         async move {
-            if !matches!(engine, Engine::ReplicatedMergeTree { .. }) {
-                return Err(crate::CHError::UnsupportedOperation(
-                    "Replica operations only for ReplicatedMergeTree".to_string(),
-                ));
-            }
-
             let query = format!(
                 "SELECT is_leader, absolute_delay, queue_size \
                  FROM system.replicas \
@@ -41,17 +34,10 @@ where
     }
 
     fn sync_replica(&self) -> impl Future<Output = Result<()>> + Send {
-        let engine = self.engine.clone();
         let table_name = self.table_name.to_string();
         let client = self.client.clone();
 
         async move {
-            if !matches!(engine, Engine::ReplicatedMergeTree { .. }) {
-                return Err(crate::CHError::UnsupportedOperation(
-                    "SYNC REPLICA only for ReplicatedMergeTree".to_string(),
-                ));
-            }
-
             let sql = format!("SYSTEM SYNC REPLICA {}", table_name);
             client.client().query(&sql).execute().await?;
             Ok(())

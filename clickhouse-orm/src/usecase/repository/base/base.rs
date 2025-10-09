@@ -16,7 +16,6 @@ where
         &self.engine
     }
 
-    // ===== Table management =====
     pub async fn create_table(&self) -> Result<()> {
         let sql = T::create_table_sql();
         self.execute_raw(&sql).await
@@ -32,7 +31,6 @@ where
         self.execute_raw(&sql).await
     }
 
-    // ===== Insert =====
     pub async fn insert_one(&self, entity: &T) -> Result<()> {
         let mut insert = self.client.client().insert(self.table_name)?;
         insert.write(entity).await?;
@@ -52,7 +50,6 @@ where
         Ok(())
     }
 
-    // ===== Select / Query =====
     pub async fn fetch_all(&self, use_final: bool) -> Result<Vec<T>> {
         let final_clause = if use_final && self.engine.supports_final() { " FINAL" } else { "" };
         let sql = format!("SELECT * FROM {}{}", self.table_name, final_clause);
@@ -85,7 +82,6 @@ where
         Ok(count)
     }
 
-    // ===== Aggregations =====
     pub async fn sum(&self, column: &str) -> Result<f64> {
         let sql = format!("SELECT sum({}) FROM {}", column, self.table_name);
         let result: f64 = self.client.client().query(&sql).fetch_one::<f64>().await?;
@@ -110,7 +106,6 @@ where
         Ok(result)
     }
 
-    // ===== Execute raw SQL =====
     pub async fn execute_raw(&self, sql: &str) -> Result<()> {
         self.client.client().query(sql).execute().await?;
         Ok(())

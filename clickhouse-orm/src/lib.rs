@@ -8,7 +8,6 @@ pub use clickhouse_orm_macros::ClickHouseTable;
 pub use domain::client::client::CHClient;
 pub use domain::engine::Engine;
 pub use domain::errors::default::CHError;
-pub use domain::query::query::Query;
 pub use domain::repository::repository::Repository;
 pub use infrastructure::adapters::engine::engine_options::{MergeTreeOps, ReplicatedMergeTreeOps};
 pub use serde::{Deserialize, Serialize};
