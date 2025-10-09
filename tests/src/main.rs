@@ -1,3 +1,4 @@
+use chrono::Utc;
 use clickhouse_orm::infrastructure::adapters::engine::engine_options::MergeTreeOps;
 use clickhouse_orm::CHClient;
 use tests::domain::{PageView, User};
@@ -16,17 +17,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let users = User::repository(client.clone());
     let page_views = PageView::repository(client.clone());
 
-    match users.create_table().await {
-        Ok(_) => info!("Table 'users' created successfully"),
-        Err(e) => error!("Failed to create table 'users': {}", e),
+    if let Err(e) = users.create_table().await {
+        error!("Failed to create table 'users': {}", e);
+    } else {
+        info!("Table 'users' created successfully");
     }
 
-    match page_views.create_table().await {
-        Ok(_) => info!("Table 'page_views' created successfully"),
-        Err(e) => error!("Failed to create table 'page_views': {}", e),
+    if let Err(e) = page_views.create_table().await {
+        error!("Failed to create table 'page_views': {}", e);
+    } else {
+        info!("Table 'page_views' created successfully");
     }
 
-    let now = chrono::Utc::now().timestamp() as u32;
+    let now = Utc::now().timestamp() as u32;
     let user =
         User { id: 1, email: "alice@example.com".into(), created_at: now, last_seen: Some(now) };
 
@@ -37,26 +40,26 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         info!("Inserted user successfully!");
     }
 
-    let rows = users.query().fetch_all().await?;
+    let rows = users.fetch_all(false).await?;
     info!("Fetched {} users from DB:", rows.len());
-    for u in rows {
+    for u in &rows {
         println!("{:?}", u);
     }
 
-    let emails = users.query().select_column::<String>("email").await?;
-
+    let emails = users.select_columns::<String>(&["email"], false).await?;
     info!("Fetched {} emails:", emails.len());
     for email in emails {
         println!("Email: {}", email);
     }
 
-    let parts_info = users.get_parts_info().await?;
-    info!("Parts info for 'users' table:");
-    for part in parts_info {
-        println!(
-            "Partition: {}, Name: {}, Rows: {}, Bytes: {}",
-            part.partition, part.name, part.rows, part.bytes
-        );
+    if let Ok(parts_info) = users.get_parts_info().await {
+        info!("Parts info for 'users' table:");
+        for part in parts_info {
+            println!(
+                "Partition: {}, Name: {}, Rows: {}, Bytes: {}",
+                part.partition, part.name, part.rows, part.bytes
+            );
+        }
     }
 
     Ok(())

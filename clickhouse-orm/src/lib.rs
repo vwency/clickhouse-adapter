@@ -12,7 +12,6 @@ pub use domain::query::query::Query;
 pub use domain::repository::repository::Repository;
 pub use infrastructure::adapters::engine::engine_options::{MergeTreeOps, ReplicatedMergeTreeOps};
 pub use serde::{Deserialize, Serialize};
-pub use usecase::query::query::AggregateQuery;
 pub use usecase::repository::replicated_merge_tree::replicated_merge_tree_ops::*;
 pub use usecase::repository::*;
 pub trait ClickHouseTable {
