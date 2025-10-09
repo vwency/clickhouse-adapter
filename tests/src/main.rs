@@ -1,4 +1,4 @@
-use clickhouse_orm::merge_tree::merge_tree_ops::MergeTreeOps;
+use clickhouse_orm::infrastructure::adapters::engine::engine_options::MergeTreeOps;
 use clickhouse_orm::CHClient;
 use tests::domain::{PageView, User};
 use tracing::{error, info, Level};

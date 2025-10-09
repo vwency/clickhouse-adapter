@@ -5,7 +5,7 @@ use clickhouse::Client;
 use serde::de::DeserializeOwned;
 use std::marker::PhantomData;
 
-impl<T> Query<T>
+impl<T, F> Query<T, F>
 where
     T: DeserializeOwned + clickhouse::Row,
 {

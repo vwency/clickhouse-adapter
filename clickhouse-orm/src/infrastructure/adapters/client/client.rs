@@ -13,7 +13,6 @@ impl CHClient {
         Self { inner: Arc::new(client) }
     }
 
-    /// Создает клиент с полными учетными данными
     pub fn with_credentials(
         url: impl Into<String>,
         database: impl Into<String>,

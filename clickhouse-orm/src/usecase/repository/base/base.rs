@@ -32,7 +32,7 @@ where
         self.execute_raw(&sql).await
     }
 
-    pub fn query(&self) -> Query<T> {
+    pub fn query(&self) -> Query<T, F> {
         Query::new(self.client.client().clone(), self.table_name, self.engine.clone())
     }
 

@@ -1,15 +1,11 @@
 use crate::domain::engine::MergeTreeFlag;
-use crate::domain::engine::{Engine, PartInfo};
+use crate::domain::engine::PartInfo;
 use crate::domain::errors::default::Result;
 use crate::domain::repository::repository::Repository;
+use crate::infrastructure::adapters::engine::engine_options::MergeTreeOps;
 use crate::ClickHouseTable;
 use serde::{de::DeserializeOwned, Serialize};
 use std::future::Future;
-
-pub trait MergeTreeOps {
-    fn get_parts_info(&self) -> impl Future<Output = Result<Vec<PartInfo>>> + Send;
-    fn optimize_table(&self) -> impl Future<Output = Result<()>> + Send;
-}
 
 impl<T> MergeTreeOps for Repository<T, MergeTreeFlag>
 where

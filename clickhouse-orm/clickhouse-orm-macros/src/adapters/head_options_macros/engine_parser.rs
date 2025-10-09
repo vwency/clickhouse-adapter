@@ -23,6 +23,27 @@ impl EngineParser {
         }
     }
 
+    pub fn get_flag_type(config: &EngineConfig) -> TokenStream {
+        match config.engine_type.as_str() {
+            "MergeTree" => quote! { clickhouse_orm::MergeTreeFlag },
+            "ReplicatedMergeTree" => quote! { clickhouse_orm::ReplicatedMergeTreeFlag },
+            "SummingMergeTree" => quote! { clickhouse_orm::SummingMergeTreeFlag },
+            "AggregatingMergeTree" => quote! { clickhouse_orm::AggregatingMergeTreeFlag },
+            "CollapsingMergeTree" => quote! { clickhouse_orm::CollapsingMergeTreeFlag },
+            "VersionedCollapsingMergeTree" => {
+                quote! { clickhouse_orm::VersionedCollapsingMergeTreeFlag }
+            }
+            "ReplacingMergeTree" => quote! { clickhouse_orm::ReplacingMergeTreeFlag },
+            "GraphiteMergeTree" => quote! { clickhouse_orm::GraphiteMergeTreeFlag },
+            "Log" => quote! { clickhouse_orm::LogFlag },
+            "TinyLog" => quote! { clickhouse_orm::TinyLogFlag },
+            "Memory" => quote! { clickhouse_orm::MemoryFlag },
+            "Buffer" => quote! { clickhouse_orm::BufferFlag },
+            "Distributed" => quote! { clickhouse_orm::DistributedFlag },
+            _ => quote! { () },
+        }
+    }
+
     fn get_str<'a>(opt: &'a Option<String>, default: &'a str) -> &'a str {
         opt.as_deref().unwrap_or(default)
     }
