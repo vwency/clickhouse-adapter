@@ -4,3 +4,4 @@
 - Add support native clickhouse features
 - Scale scope
 - architecture changes
+- Batching add
