@@ -4,5 +4,6 @@
 - Add support native clickhouse features
 - Scale scope
 - architecture changes
-- Batching add
+- Add Batching
 - Add checks engines compability in code
+- Add Migrations
