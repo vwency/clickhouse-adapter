@@ -1,11 +1,15 @@
 use crate::domain::errors::default::Result;
 use crate::domain::repository::repository::Repository;
 use crate::ClickHouseTable;
-use serde::{de::DeserializeOwned, Serialize};
+use serde::{de::DeserializeOwned, Deserialize, Serialize};
 
 impl<T, F> Repository<T, F>
 where
-    T: Serialize + DeserializeOwned + clickhouse::Row + ClickHouseTable,
+    T: Serialize
+        + DeserializeOwned
+        + for<'a> clickhouse::Row<Value<'a> = T>
+        + ClickHouseTable
+        + 'static,
 {
     pub async fn fetch_all(&self, use_final: bool) -> Result<Vec<T>> {
         let final_clause = if use_final && self.engine.supports_final() { " FINAL" } else { "" };
@@ -23,7 +27,7 @@ where
 
     pub async fn select_columns<U>(&self, columns: &[&str], use_final: bool) -> Result<Vec<U>>
     where
-        U: DeserializeOwned + clickhouse::Row,
+        U: DeserializeOwned + for<'a> clickhouse::Row<Value<'a> = U> + 'static,
     {
         let final_clause = if use_final && self.engine.supports_final() { " FINAL" } else { "" };
         let columns_str = columns.join(", ");
@@ -34,8 +38,14 @@ where
 
     pub async fn count(&self, use_final: bool) -> Result<u64> {
         let final_clause = if use_final && self.engine.supports_final() { " FINAL" } else { "" };
-        let sql = format!("SELECT count() FROM {}{}", self.table_name, final_clause);
-        let count: u64 = self.client.client().query(&sql).fetch_one::<u64>().await?;
-        Ok(count)
+        let sql = format!("SELECT count() as value FROM {}{}", self.table_name, final_clause);
+
+        #[derive(Deserialize, clickhouse::Row)]
+        struct Count {
+            value: u64,
+        }
+
+        let result = self.client.client().query(&sql).fetch_one::<Count>().await?;
+        Ok(result.value)
     }
 }

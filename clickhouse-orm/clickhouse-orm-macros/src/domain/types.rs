@@ -1,3 +1,4 @@
+use once_cell::sync::Lazy;
 use std::collections::HashMap;
 
 pub const DEFAULT_TYPE: &str = "String";
@@ -31,3 +32,5 @@ pub fn type_map() -> HashMap<&'static str, &'static str> {
     map.insert("Uuid", "UUID");
     map
 }
+
+pub static TYPE_MAP: Lazy<HashMap<&'static str, &'static str>> = Lazy::new(type_map);

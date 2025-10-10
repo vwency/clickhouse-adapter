@@ -19,8 +19,10 @@ pub fn clickhouse_table_derive(input: TokenStream) -> TokenStream {
 
     let table_name = get_table_name(&input);
     let options = TableOptions::from_derive_input(&input);
-    let create_sql = generate_create_table_sql(&input, &table_name, &options);
     let engine_config = EngineConfig::from_attributes(&input.attrs);
+
+    // Генерируем SQL с учетом engine_config
+    let create_sql = generate_create_table_sql(&input, &table_name, &options, &engine_config);
 
     let engine_expr = EngineParser::parse_engine(&engine_config);
     let flag_type = EngineParser::get_flag_type(&engine_config);

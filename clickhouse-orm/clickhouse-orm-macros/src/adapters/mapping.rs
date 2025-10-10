@@ -1,9 +1,6 @@
-use crate::domain::types::{type_map, DEFAULT_TYPE, NULLABLE_TEMPLATE};
-use once_cell::sync::Lazy;
-use std::collections::HashMap;
+use crate::domain::types::TYPE_MAP;
+use crate::domain::types::{DEFAULT_TYPE, NULLABLE_TEMPLATE};
 use syn::Field;
-
-static TYPE_MAP: Lazy<HashMap<&'static str, &'static str>> = Lazy::new(type_map);
 
 pub fn extract_clickhouse_type(field: &Field) -> String {
     super::attribute_parser::find_clickhouse_type_attr(field)
