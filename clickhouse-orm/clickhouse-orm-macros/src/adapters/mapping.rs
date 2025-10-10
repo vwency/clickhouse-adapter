@@ -1,30 +1,9 @@
+use crate::domain::types::{type_map, DEFAULT_TYPE, NULLABLE_TEMPLATE};
 use once_cell::sync::Lazy;
 use std::collections::HashMap;
 use syn::Field;
 
-const DEFAULT_TYPE: &str = "String";
-const NULLABLE_TEMPLATE: &str = "Nullable({})";
-const DATETIME_UTC: &str = "DateTime('UTC')";
-
-static TYPE_MAP: Lazy<HashMap<&'static str, &'static str>> = Lazy::new(|| {
-    let mut map = HashMap::new();
-    map.insert("u8", "UInt8");
-    map.insert("u16", "UInt16");
-    map.insert("u32", "UInt32");
-    map.insert("u64", "UInt64");
-    map.insert("i8", "Int8");
-    map.insert("i16", "Int16");
-    map.insert("i32", "Int32");
-    map.insert("i64", "Int64");
-    map.insert("f32", "Float32");
-    map.insert("f64", "Float64");
-    map.insert("bool", "UInt8");
-    map.insert("String", "String");
-    map.insert("DateTime", DATETIME_UTC);
-    map.insert("Date", "Date");
-    map.insert("Uuid", "UUID");
-    map
-});
+static TYPE_MAP: Lazy<HashMap<&'static str, &'static str>> = Lazy::new(type_map);
 
 pub fn extract_clickhouse_type(field: &Field) -> String {
     super::attribute_parser::find_clickhouse_type_attr(field)

@@ -1,5 +1,5 @@
-use crate::adapters::field_extractor::FieldDefinition;
-use crate::adapters::head_options_macros::table_options::TableOptions;
+use crate::domain::field_definition::FieldDefinition;
+use crate::domain::table_options::TableOptions;
 
 const CREATE_TABLE_TEMPLATE: &str = "CREATE TABLE IF NOT EXISTS";
 const ENGINE_PREFIX: &str = " ENGINE = ";

@@ -6,9 +6,9 @@ mod adapters;
 mod domain;
 mod generator;
 
-use adapters::head_options_macros::engine_parser::EngineParser;
+use crate::domain::engine_parser::EngineParser;
+use crate::domain::table_options::TableOptions;
 use adapters::head_options_macros::table_name::get_table_name;
-use adapters::head_options_macros::table_options::TableOptions;
 use domain::engine_config::EngineConfig;
 use generator::sql_generator::generate_create_table_sql;
 

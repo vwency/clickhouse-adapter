@@ -1,6 +1,5 @@
+use crate::domain::types::OPTION_TYPE;
 use syn::PathSegment;
-
-const OPTION_TYPE: &str = "Option";
 
 pub fn map_segment_to_clickhouse(segment: &PathSegment) -> String {
     let type_str = segment.ident.to_string();

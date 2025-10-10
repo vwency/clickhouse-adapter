@@ -1,7 +1,5 @@
+use crate::domain::types::{CLICKHOUSE_ATTR, TYPE_ATTR};
 use syn::{Field, Meta};
-
-const CLICKHOUSE_ATTR: &str = "clickhouse";
-const TYPE_ATTR: &str = "type";
 
 pub fn find_clickhouse_type_attr(field: &Field) -> Option<String> {
     field

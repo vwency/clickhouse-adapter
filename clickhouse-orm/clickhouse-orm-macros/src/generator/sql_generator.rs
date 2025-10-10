@@ -1,5 +1,5 @@
 use crate::adapters::field_extractor::extract_fields;
-use crate::adapters::head_options_macros::table_options::TableOptions;
+use crate::domain::table_options::TableOptions;
 use crate::generator::sql_builder::build_create_table_sql;
 use syn::DeriveInput;
 

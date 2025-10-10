@@ -1,8 +1,7 @@
 use crate::domain::engine_config::EngineConfig;
+use crate::domain::engine_parser::EngineParser;
 use proc_macro2::TokenStream;
 use quote::quote;
-
-pub struct EngineParser;
 
 impl EngineParser {
     pub fn parse_engine(config: &EngineConfig) -> TokenStream {
