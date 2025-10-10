@@ -2,16 +2,16 @@ use crate::domain::engine::MergeTreeFlag;
 use crate::domain::engine::PartInfo;
 use crate::domain::errors::default::Result;
 use crate::domain::repository::repository::Repository;
-use crate::infrastructure::adapters::engine::engine_options::MergeTreeOps;
 use crate::ClickHouseTable;
+use clickhouse;
 use serde::{de::DeserializeOwned, Serialize};
 use std::future::Future;
 
-impl<T> MergeTreeOps for Repository<T, MergeTreeFlag>
+impl<T> Repository<T, MergeTreeFlag>
 where
     T: Serialize + DeserializeOwned + clickhouse::Row + ClickHouseTable,
 {
-    fn get_parts_info(&self) -> impl Future<Output = Result<Vec<PartInfo>>> + Send {
+    pub fn get_parts_info(&self) -> impl Future<Output = Result<Vec<PartInfo>>> + Send {
         let table_name = self.table_name.to_string();
         let client = self.client.clone();
 
@@ -31,24 +31,13 @@ where
 
             Ok(parts
                 .into_iter()
-                .map(|(partition, name, rows, bytes, mod_time)| PartInfo {
+                .map(|(partition, name, rows, bytes, _mod_time)| PartInfo {
                     partition,
                     name,
                     rows,
-                    bytes: bytes,
+                    bytes,
                 })
                 .collect())
-        }
-    }
-
-    fn optimize_table(&self) -> impl Future<Output = Result<()>> + Send {
-        let table_name = self.table_name.to_string();
-        let client = self.client.clone();
-
-        async move {
-            let sql = format!("OPTIMIZE TABLE {} FINAL", table_name);
-            client.client().query(&sql).execute().await?;
-            Ok(())
         }
     }
 }

@@ -1,17 +1,15 @@
-use crate::domain::engine::ReplicatedMergeTreeFlag;
-pub use crate::domain::engine::{Engine, PartInfo, ReplicaStatus};
+use crate::domain::engine::{ReplicaStatus, ReplicatedMergeTreeFlag};
 use crate::domain::errors::default::Result;
 use crate::domain::repository::repository::Repository;
-use crate::infrastructure::adapters::engine::engine_options::ReplicatedMergeTreeOps;
 use crate::ClickHouseTable;
 use serde::{de::DeserializeOwned, Serialize};
 use std::future::Future;
 
-impl<T> ReplicatedMergeTreeOps for Repository<T, ReplicatedMergeTreeFlag>
+impl<T> Repository<T, ReplicatedMergeTreeFlag>
 where
     T: Serialize + DeserializeOwned + clickhouse::Row + ClickHouseTable,
 {
-    fn check_replica_status(&self) -> impl Future<Output = Result<ReplicaStatus>> + Send {
+    pub fn check_replica_status(&self) -> impl Future<Output = Result<ReplicaStatus>> + Send {
         let table_name = self.table_name.to_string();
         let client = self.client.clone();
 
@@ -30,17 +28,6 @@ where
                 absolute_delay: result.1,
                 queue_size: result.2,
             })
-        }
-    }
-
-    fn sync_replica(&self) -> impl Future<Output = Result<()>> + Send {
-        let table_name = self.table_name.to_string();
-        let client = self.client.clone();
-
-        async move {
-            let sql = format!("SYSTEM SYNC REPLICA {}", table_name);
-            client.client().query(&sql).execute().await?;
-            Ok(())
         }
     }
 }

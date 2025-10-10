@@ -11,7 +11,7 @@ pub use domain::errors::default::CHError;
 pub use domain::repository::repository::Repository;
 pub use infrastructure::adapters::engine::engine_options::{MergeTreeOps, ReplicatedMergeTreeOps};
 pub use serde::{Deserialize, Serialize};
-pub use usecase::repository::replicated_merge_tree::replicated_merge_tree::*;
+pub use usecase::repository::replicated_merge_tree::*;
 pub use usecase::repository::*;
 pub trait ClickHouseTable {
     fn table_name() -> &'static str;
