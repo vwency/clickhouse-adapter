@@ -1,11 +1,12 @@
-use clickhouse_orm::{ClickHouseTable, Deserialize, Row, Serialize};
+use clickhouse_orm::ClickHouseTable;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Serialize, Deserialize, Row, ClickHouseTable)]
+#[derive(Debug, Clone, Serialize, Deserialize, ClickHouseTable)]
 #[table_name = "users"]
-#[clickhouse(engine = "MergeTree")]
+#[clickhouse(engine = "MergeTree", order_by = "id")]
 pub struct User {
     pub id: u64,
     pub email: String,
-    pub created_at: u32,        // Unix timestamp
-    pub last_seen: Option<u32>, // Unix timestamp
+    pub created_at: u32,
+    pub last_seen: Option<u32>,
 }

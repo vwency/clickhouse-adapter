@@ -5,7 +5,7 @@ use serde::{de::DeserializeOwned, Serialize};
 
 impl<T, F> Repository<T, F>
 where
-    T: Serialize + DeserializeOwned + clickhouse::Row + ClickHouseTable,
+    T: Serialize + DeserializeOwned + ClickHouseTable,
 {
     pub async fn create_table(&self) -> Result<()> {
         let sql = T::create_table_sql();

@@ -1,6 +1,6 @@
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::{parse_macro_input, DeriveInput};
+use syn::{parse_macro_input, Data, DeriveInput, Fields};
 
 mod adapters;
 mod domain;
@@ -17,11 +17,13 @@ pub fn clickhouse_table_derive(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
     let name = &input.ident;
 
-    let table_name = get_table_name(&input);
+    let table_name_str = get_table_name(&input);
     let options = TableOptions::from_derive_input(&input);
-    let create_sql = generate_create_table_sql(&input, &table_name, &options);
+    let create_sql_str = generate_create_table_sql(&input, &table_name_str, &options);
     let engine_config = EngineConfig::from_attributes(&input.attrs);
 
+    let table_name = syn::LitStr::new(&table_name_str, proc_macro2::Span::call_site());
+    let create_sql = syn::LitStr::new(&create_sql_str, proc_macro2::Span::call_site());
     let engine_expr = EngineParser::parse_engine(&engine_config);
     let flag_type = EngineParser::get_flag_type(&engine_config);
 
