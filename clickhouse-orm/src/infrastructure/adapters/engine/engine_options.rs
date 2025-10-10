@@ -1,3 +1,5 @@
+// unused deprecated
+
 pub use crate::domain::engine::{Engine, PartInfo, ReplicaStatus};
 use crate::domain::errors::default::Result;
 use crate::infrastructure::adapters::engine::engine::CHResult;
