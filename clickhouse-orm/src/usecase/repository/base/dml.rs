@@ -7,11 +7,12 @@ use serde::{de::DeserializeOwned, Serialize};
 impl<T, F> Repository<T, F>
 where
     T: Serialize + DeserializeOwned + Row + ClickHouseTable,
-    for<'a> <T as Row>::Value<'a>: From<&'a T> + Serialize,
+    for<'a> <T as Row>::Value<'a>: Serialize + From<&'a T>,
 {
     pub async fn insert_one(&self, entity: &T) -> Result<()> {
         let mut insert = self.client.client().insert::<T>(self.table_name).await?;
-        insert.write(&<T as Row>::Value::from(entity)).await?;
+        let value: <T as Row>::Value<'_> = entity.into();
+        insert.write(&value).await?;
         insert.end().await?;
         Ok(())
     }
@@ -22,7 +23,8 @@ where
         }
         let mut insert = self.client.client().insert::<T>(self.table_name).await?;
         for entity in entities {
-            insert.write(&<T as Row>::Value::from(entity)).await?;
+            let value: <T as Row>::Value<'_> = entity.into();
+            insert.write(&value).await?;
         }
         insert.end().await?;
         Ok(())

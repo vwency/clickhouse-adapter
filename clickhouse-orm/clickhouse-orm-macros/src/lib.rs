@@ -12,7 +12,6 @@ use adapters::head_options_macros::table_name::get_table_name;
 use domain::engine_config::EngineConfig;
 use generator::sql_generator::generate_create_table_sql;
 
-// Переименовали атрибуты: table_name -> ch_table, clickhouse -> ch_config
 #[proc_macro_derive(ClickHouseTable, attributes(ch_table, ch_config))]
 pub fn clickhouse_table_derive(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
