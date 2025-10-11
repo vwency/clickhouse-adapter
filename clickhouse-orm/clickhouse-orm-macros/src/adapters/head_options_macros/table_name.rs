@@ -2,7 +2,7 @@ use syn::{DeriveInput, Lit, Meta};
 
 pub fn get_table_name(input: &DeriveInput) -> String {
     for attr in &input.attrs {
-        if attr.path().is_ident("ch_table") {
+        if attr.path().is_ident("table_name") {
             if let Meta::NameValue(meta_name_value) = &attr.meta {
                 if let syn::Expr::Lit(expr_lit) = &meta_name_value.value {
                     if let Lit::Str(lit_str) = &expr_lit.lit {

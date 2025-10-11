@@ -3,8 +3,10 @@ use clickhouse_orm::ClickHouseTable;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize, Row, ClickHouseTable)]
-#[ch_table = "users"]
-#[ch_config(engine = "MergeTree", order_by = "id")]
+#[table_name = "users"]
+#[table_engine = "MergeTree"]
+#[table_engine_options(order_by = "id")]
+#[table_options(partition_by = "toYYYYMM(created_at)", primary_key = "id")]
 pub struct User {
     pub id: u64,
     pub email: String,
