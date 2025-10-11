@@ -30,6 +30,15 @@ pub fn clickhouse_table_derive(input: TokenStream) -> TokenStream {
     let flag_type = EngineParser::get_flag_type(&engine_config);
 
     let expanded = quote! {
+        impl<'a> #impl_generics ::std::convert::From<&'a #name #ty_generics>
+            for <#name #ty_generics as clickhouse_orm::clickhouse::Row>::Value<'a>
+        #where_clause
+        {
+            fn from(value: &'a #name #ty_generics) -> Self {
+                value.clone()
+            }
+        }
+
         impl #impl_generics clickhouse_orm::ClickHouseTable for #name #ty_generics #where_clause {
             fn table_name() -> &'static str {
                 #table_name
