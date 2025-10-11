@@ -1,6 +1,6 @@
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::{parse_macro_input, Data, DeriveInput, Fields};
+use syn::{parse_macro_input, DeriveInput};
 
 mod adapters;
 mod domain;
@@ -27,7 +27,7 @@ pub fn clickhouse_table_derive(input: TokenStream) -> TokenStream {
     let engine_config = EngineConfig::from_attributes(&input.attrs);
 
     let mut merged_options = table_options.clone();
-    merged_options.engine = Some(engine_config.engine_type.clone());
+    merged_options.engine = Some(engine_config.engine_type.to_string());
 
     let create_sql_str = generate_create_table_sql(&input, &table_name_str, &merged_options);
 

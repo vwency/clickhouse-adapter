@@ -1,5 +1,5 @@
 use crate::domain::types::{CLICKHOUSE_ATTR, TYPE_ATTR};
-use syn::{Field, Meta};
+use syn::{Expr, Field, Lit, Meta};
 
 pub fn find_clickhouse_type_attr(field: &Field) -> Option<String> {
     field
@@ -10,22 +10,25 @@ pub fn find_clickhouse_type_attr(field: &Field) -> Option<String> {
 }
 
 fn parse_type_meta(meta: &Meta) -> Option<String> {
-    match meta {
-        Meta::List(meta_list) => meta_list
-            .parse_args::<syn::MetaNameValue>()
-            .ok()
-            .filter(|nested| nested.path.is_ident(TYPE_ATTR))
-            .and_then(|nested| extract_string_literal(&nested.value)),
-        _ => None,
-    }
+    let Meta::List(meta_list) = meta else {
+        return None;
+    };
+
+    meta_list
+        .parse_args::<syn::MetaNameValue>()
+        .ok()
+        .filter(|nested| nested.path.is_ident(TYPE_ATTR))
+        .and_then(|nested| extract_string_literal(&nested.value))
 }
 
-fn extract_string_literal(expr: &syn::Expr) -> Option<String> {
-    match expr {
-        syn::Expr::Lit(expr_lit) => match &expr_lit.lit {
-            syn::Lit::Str(lit_str) => Some(lit_str.value()),
-            _ => None,
-        },
-        _ => None,
-    }
+fn extract_string_literal(expr: &Expr) -> Option<String> {
+    let Expr::Lit(expr_lit) = expr else {
+        return None;
+    };
+
+    let Lit::Str(lit_str) = &expr_lit.lit else {
+        return None;
+    };
+
+    Some(lit_str.value())
 }
