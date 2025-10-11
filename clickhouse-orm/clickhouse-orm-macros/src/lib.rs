@@ -12,10 +12,13 @@ use adapters::head_options_macros::table_name::get_table_name;
 use domain::engine_config::EngineConfig;
 use generator::sql_generator::generate_create_table_sql;
 
-#[proc_macro_derive(ClickHouseTable, attributes(table_name, clickhouse))]
+// Переименовали атрибуты: table_name -> ch_table, clickhouse -> ch_config
+#[proc_macro_derive(ClickHouseTable, attributes(ch_table, ch_config))]
 pub fn clickhouse_table_derive(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
     let name = &input.ident;
+    let generics = &input.generics;
+    let (impl_generics, ty_generics, where_clause) = generics.split_for_impl();
 
     let table_name_str = get_table_name(&input);
     let options = TableOptions::from_derive_input(&input);
@@ -28,7 +31,7 @@ pub fn clickhouse_table_derive(input: TokenStream) -> TokenStream {
     let flag_type = EngineParser::get_flag_type(&engine_config);
 
     let expanded = quote! {
-        impl clickhouse_orm::ClickHouseTable for #name {
+        impl #impl_generics clickhouse_orm::ClickHouseTable for #name #ty_generics #where_clause {
             fn table_name() -> &'static str {
                 #table_name
             }
@@ -40,7 +43,7 @@ pub fn clickhouse_table_derive(input: TokenStream) -> TokenStream {
             }
         }
 
-        impl #name {
+        impl #impl_generics #name #ty_generics #where_clause {
             pub fn repository(client: clickhouse_orm::CHClient) -> clickhouse_orm::Repository<Self, #flag_type> {
                 clickhouse_orm::Repository::new(client, Self::table_name(), #engine_expr)
             }

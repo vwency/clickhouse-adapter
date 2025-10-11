@@ -15,4 +15,4 @@ clickhouse-orm-macros = { path = "./clickhouse-orm-macros" }
 
 [dependencies.clickhouse]
 version = "0.14.0"
-features = ["inserter", "serde"]
+features = ["inserter", "chrono"]

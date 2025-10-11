@@ -3,7 +3,6 @@ pub mod infrastructure;
 pub mod usecase;
 pub use chrono::{DateTime, Utc};
 pub use clickhouse;
-pub use clickhouse::Row;
 pub use clickhouse_orm_macros::ClickHouseTable;
 pub use domain::client::client::CHClient;
 pub use domain::engine::Engine;
