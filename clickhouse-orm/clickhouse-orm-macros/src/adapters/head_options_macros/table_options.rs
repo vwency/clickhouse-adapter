@@ -19,10 +19,8 @@ impl TableOptions {
         let mut options = Self::default();
 
         for attr in &input.attrs {
-            // Проверяем атрибут ch_config
             if attr.path().is_ident("ch_config") {
                 if let Meta::List(meta_list) = &attr.meta {
-                    // Парсим все вложенные атрибуты как список MetaNameValue
                     let parsed = meta_list.parse_args_with(
                         syn::punctuated::Punctuated::<MetaNameValue, syn::Token![,]>::parse_terminated
                     );

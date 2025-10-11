@@ -1,12 +1,15 @@
 use clickhouse_orm::clickhouse::Row;
-use clickhouse_orm::{ClickHouseTable, DateTime, Utc};
+use clickhouse_orm::ClickHouseTable;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize, Row, ClickHouseTable)]
-#[ch_table = "page_views"]
-#[ch_config(engine = "MergeTree", order_by = "event_time", partition_by = "toYYYYMM(event_time)")]
+#[table_name = "page_views"]
+#[table_engine = "MergeTree"]
+#[table_engine_options(order_by = "event_time")]
+#[table_options(partition_by = "toYYYYMM(event_time)", primary_key = "id")]
 pub struct PageView {
-    pub event_time: DateTime<Utc>,
+    pub id: u64,
+    pub event_time: u32,
     pub user_id: u64,
     pub page_url: String,
     pub country: String,
