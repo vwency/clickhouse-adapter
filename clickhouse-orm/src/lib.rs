@@ -1,6 +1,8 @@
+pub mod application;
 pub mod domain;
 pub mod infrastructure;
-pub mod usecase;
+pub use application::usecase::repository::replicated_merge_tree::*;
+pub use application::usecase::repository::*;
 pub use chrono::{DateTime, Utc};
 pub use clickhouse;
 pub use clickhouse_orm_macros::ClickHouseTable;
@@ -9,8 +11,6 @@ pub use domain::engine::Engine;
 pub use domain::errors::default::CHError;
 pub use domain::repository::repository::Repository;
 pub use serde::{Deserialize, Serialize};
-pub use usecase::repository::replicated_merge_tree::*;
-pub use usecase::repository::*;
 pub trait ClickHouseTable {
     fn table_name() -> &'static str;
     fn create_table_sql() -> &'static str;
