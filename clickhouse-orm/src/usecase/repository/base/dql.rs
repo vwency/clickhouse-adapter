@@ -5,7 +5,7 @@ use serde::{de::DeserializeOwned, Serialize};
 
 impl<T, F> Repository<T, F>
 where
-    T: Serialize + DeserializeOwned + clickhouse::Row + ClickHouseTable,
+    T: Serialize + DeserializeOwned + clickhouse::Row + clickhouse::RowOwned + ClickHouseTable,
 {
     pub async fn fetch_all(&self, use_final: bool) -> Result<Vec<T>> {
         let final_clause = if use_final && self.engine.supports_final() { " FINAL" } else { "" };
@@ -23,7 +23,7 @@ where
 
     pub async fn select_columns<U>(&self, columns: &[&str], use_final: bool) -> Result<Vec<U>>
     where
-        U: DeserializeOwned + clickhouse::Row,
+        U: DeserializeOwned + clickhouse::Row + clickhouse::RowOwned,
     {
         let final_clause = if use_final && self.engine.supports_final() { " FINAL" } else { "" };
         let columns_str = columns.join(", ");

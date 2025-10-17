@@ -1,45 +1,50 @@
-use crate::domain::engine_config::EngineConfig;
+use crate::domain::engine_config::{EngineConfig, EngineType};
 use crate::domain::engine_parser::EngineParser;
 use proc_macro2::TokenStream;
 use quote::quote;
 
 impl EngineParser {
     pub fn parse_engine(config: &EngineConfig) -> TokenStream {
-        match config.engine_type.as_str() {
-            "ReplicatedMergeTree" => Self::replicated_merge_tree(config),
-            "CollapsingMergeTree" => Self::collapsing_merge_tree(config),
-            "VersionedCollapsingMergeTree" => Self::versioned_collapsing_merge_tree(config),
-            "SummingMergeTree" => Self::summing_merge_tree(config),
-            "AggregatingMergeTree" => quote! { clickhouse_orm::Engine::AggregatingMergeTree },
-            "ReplacingMergeTree" => quote! { clickhouse_orm::Engine::ReplacingMergeTree },
-            "GraphiteMergeTree" => quote! { clickhouse_orm::Engine::GraphiteMergeTree },
-            "Log" => quote! { clickhouse_orm::Engine::Log },
-            "TinyLog" => quote! { clickhouse_orm::Engine::TinyLog },
-            "Memory" => quote! { clickhouse_orm::Engine::Memory },
-            "Buffer" => quote! { clickhouse_orm::Engine::Buffer },
-            "Distributed" => quote! { clickhouse_orm::Engine::Distributed },
-            "MergeTree" | _ => quote! { clickhouse_orm::Engine::MergeTree },
+        match &config.engine_type {
+            EngineType::ReplicatedMergeTree => Self::replicated_merge_tree(config),
+            EngineType::CollapsingMergeTree => Self::collapsing_merge_tree(config),
+            EngineType::VersionedCollapsingMergeTree => {
+                Self::versioned_collapsing_merge_tree(config)
+            }
+            EngineType::SummingMergeTree => Self::summing_merge_tree(config),
+            EngineType::AggregatingMergeTree => {
+                quote! { clickhouse_orm::Engine::AggregatingMergeTree }
+            }
+            EngineType::ReplacingMergeTree => quote! { clickhouse_orm::Engine::ReplacingMergeTree },
+            EngineType::GraphiteMergeTree => quote! { clickhouse_orm::Engine::GraphiteMergeTree },
+            EngineType::Log => quote! { clickhouse_orm::Engine::Log },
+            EngineType::TinyLog => quote! { clickhouse_orm::Engine::TinyLog },
+            EngineType::Memory => quote! { clickhouse_orm::Engine::Memory },
+            EngineType::Buffer => quote! { clickhouse_orm::Engine::Buffer },
+            EngineType::Distributed => quote! { clickhouse_orm::Engine::Distributed },
+            EngineType::MergeTree => quote! { clickhouse_orm::Engine::MergeTree },
+            EngineType::Other(_) => quote! { clickhouse_orm::Engine::MergeTree }, // fallback
         }
     }
 
     pub fn get_flag_type(config: &EngineConfig) -> TokenStream {
-        match config.engine_type.as_str() {
-            "MergeTree" => quote! { clickhouse_orm::MergeTreeFlag },
-            "ReplicatedMergeTree" => quote! { clickhouse_orm::ReplicatedMergeTreeFlag },
-            "SummingMergeTree" => quote! { clickhouse_orm::SummingMergeTreeFlag },
-            "AggregatingMergeTree" => quote! { clickhouse_orm::AggregatingMergeTreeFlag },
-            "CollapsingMergeTree" => quote! { clickhouse_orm::CollapsingMergeTreeFlag },
-            "VersionedCollapsingMergeTree" => {
+        match &config.engine_type {
+            EngineType::MergeTree => quote! { clickhouse_orm::MergeTreeFlag },
+            EngineType::ReplicatedMergeTree => quote! { clickhouse_orm::ReplicatedMergeTreeFlag },
+            EngineType::SummingMergeTree => quote! { clickhouse_orm::SummingMergeTreeFlag },
+            EngineType::AggregatingMergeTree => quote! { clickhouse_orm::AggregatingMergeTreeFlag },
+            EngineType::CollapsingMergeTree => quote! { clickhouse_orm::CollapsingMergeTreeFlag },
+            EngineType::VersionedCollapsingMergeTree => {
                 quote! { clickhouse_orm::VersionedCollapsingMergeTreeFlag }
             }
-            "ReplacingMergeTree" => quote! { clickhouse_orm::ReplacingMergeTreeFlag },
-            "GraphiteMergeTree" => quote! { clickhouse_orm::GraphiteMergeTreeFlag },
-            "Log" => quote! { clickhouse_orm::LogFlag },
-            "TinyLog" => quote! { clickhouse_orm::TinyLogFlag },
-            "Memory" => quote! { clickhouse_orm::MemoryFlag },
-            "Buffer" => quote! { clickhouse_orm::BufferFlag },
-            "Distributed" => quote! { clickhouse_orm::DistributedFlag },
-            _ => quote! { () },
+            EngineType::ReplacingMergeTree => quote! { clickhouse_orm::ReplacingMergeTreeFlag },
+            EngineType::GraphiteMergeTree => quote! { clickhouse_orm::GraphiteMergeTreeFlag },
+            EngineType::Log => quote! { clickhouse_orm::LogFlag },
+            EngineType::TinyLog => quote! { clickhouse_orm::TinyLogFlag },
+            EngineType::Memory => quote! { clickhouse_orm::MemoryFlag },
+            EngineType::Buffer => quote! { clickhouse_orm::BufferFlag },
+            EngineType::Distributed => quote! { clickhouse_orm::DistributedFlag },
+            EngineType::Other(_) => quote! { () },
         }
     }
 

@@ -1,6 +1,7 @@
 use chrono::Utc;
 use clickhouse_orm::CHClient;
-use tests::domain::{PageView, User};
+use tests::domain::page_view::PageView;
+use tests::domain::User;
 use tracing::{error, info, Level};
 use tracing_subscriber;
 
@@ -32,33 +33,35 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let user =
         User { id: 1, email: "alice@example.com".into(), created_at: now, last_seen: Some(now) };
 
-    info!("Inserting one user...");
     if let Err(e) = users.insert_one(&user).await {
         error!("Failed to insert user: {}", e);
     } else {
         info!("Inserted user successfully!");
     }
+    let page_view = PageView {
+        id: 1,
+        event_time: Utc::now().timestamp() as u32,
+        user_id: 1,
+        page_url: "https://example.com/home".into(),
+        country: "US".into(),
+        device_type: "desktop".into(),
+    };
+    if let Err(e) = page_views.insert_one(&page_view).await {
+        error!("Failed to insert page view: {}", e);
+    } else {
+        info!("Inserted page view successfully!");
+    }
 
-    let rows = users.fetch_all(false).await?;
-    info!("Fetched {} users from DB:", rows.len());
-    for u in &rows {
+    let users_rows = users.fetch_all(false).await?;
+    info!("Fetched {} users from DB:", users_rows.len());
+    for u in &users_rows {
         println!("{:?}", u);
     }
 
-    let emails = users.select_columns::<String>(&["email"], false).await?;
-    info!("Fetched {} emails:", emails.len());
-    for email in emails {
-        println!("Email: {}", email);
-    }
-
-    if let Ok(parts_info) = users.get_parts_info().await {
-        info!("Parts info for 'users' table:");
-        for part in parts_info {
-            println!(
-                "Partition: {}, Name: {}, Rows: {}, Bytes: {}",
-                part.partition, part.name, part.rows, part.bytes
-            );
-        }
+    let page_views_rows = page_views.fetch_all(false).await?;
+    info!("Fetched {} page views from DB:", page_views_rows.len());
+    for pv in &page_views_rows {
+        println!("{:?}", pv);
     }
 
     Ok(())
