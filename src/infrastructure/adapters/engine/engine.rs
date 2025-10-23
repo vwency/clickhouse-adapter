@@ -5,35 +5,27 @@ pub type CHResult<T> = Result<T, CHError>;
 
 impl Engine {
     pub fn from_sql(sql: &str) -> Self {
-        if sql.contains("ReplicatedMergeTree") {
-            Self::ReplicatedMergeTree { zk_path: String::new(), replica: String::new() }
-        } else if sql.contains("SummingMergeTree") {
-            Self::SummingMergeTree { columns: vec![] }
-        } else if sql.contains("AggregatingMergeTree") {
-            Self::AggregatingMergeTree
-        } else if sql.contains("CollapsingMergeTree") {
-            Self::CollapsingMergeTree { sign_column: String::new() }
-        } else if sql.contains("VersionedCollapsingMergeTree") {
-            Self::VersionedCollapsingMergeTree {
+        match sql {
+            s if s.contains("ReplicatedMergeTree") => {
+                Self::ReplicatedMergeTree { zk_path: String::new(), replica: String::new() }
+            }
+            s if s.contains("VersionedCollapsingMergeTree") => Self::VersionedCollapsingMergeTree {
                 sign_column: String::new(),
                 version_column: String::new(),
+            },
+            s if s.contains("CollapsingMergeTree") => {
+                Self::CollapsingMergeTree { sign_column: String::new() }
             }
-        } else if sql.contains("ReplacingMergeTree") {
-            Self::ReplacingMergeTree
-        } else if sql.contains("GraphiteMergeTree") {
-            Self::GraphiteMergeTree
-        } else if sql.contains("Log") {
-            Self::Log
-        } else if sql.contains("TinyLog") {
-            Self::TinyLog
-        } else if sql.contains("Memory") {
-            Self::Memory
-        } else if sql.contains("Buffer") {
-            Self::Buffer
-        } else if sql.contains("Distributed") {
-            Self::Distributed
-        } else {
-            Self::MergeTree
+            s if s.contains("SummingMergeTree") => Self::SummingMergeTree { columns: vec![] },
+            s if s.contains("AggregatingMergeTree") => Self::AggregatingMergeTree,
+            s if s.contains("ReplacingMergeTree") => Self::ReplacingMergeTree,
+            s if s.contains("GraphiteMergeTree") => Self::GraphiteMergeTree,
+            s if s.contains("TinyLog") => Self::TinyLog,
+            s if s.contains("Log") => Self::Log,
+            s if s.contains("Memory") => Self::Memory,
+            s if s.contains("Buffer") => Self::Buffer,
+            s if s.contains("Distributed") => Self::Distributed,
+            _ => Self::MergeTree,
         }
     }
 

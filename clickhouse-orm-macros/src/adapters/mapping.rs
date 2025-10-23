@@ -3,8 +3,6 @@ use once_cell::sync::Lazy;
 use std::collections::HashMap;
 use syn::{Field, Type};
 
-static TYPE_MAP: Lazy<HashMap<&'static str, &'static str>> = Lazy::new(type_map);
-
 pub fn extract_clickhouse_type(field: &Field) -> String {
     super::attribute_parser::find_clickhouse_type_attr(field)
         .unwrap_or_else(|| map_rust_type_to_clickhouse(&field.ty))
