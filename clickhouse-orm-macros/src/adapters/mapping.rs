@@ -1,6 +1,4 @@
-use crate::domain::types::{type_map, DEFAULT_TYPE, NULLABLE_TEMPLATE};
-use once_cell::sync::Lazy;
-use std::collections::HashMap;
+use crate::domain::types::{DEFAULT_TYPE, NULLABLE_TEMPLATE, TYPE_MAP};
 use syn::{Field, Type};
 
 pub fn extract_clickhouse_type(field: &Field) -> String {
