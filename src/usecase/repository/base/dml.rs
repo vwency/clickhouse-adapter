@@ -35,4 +35,15 @@ where
         insert.end().await?;
         Ok(())
     }
+
+    pub async fn delete_where(&self, condition: &str) -> Result<()> {
+        let sql = format!("ALTER TABLE {} DELETE WHERE {}", self.table_name, condition);
+        self.execute_raw(&sql).await
+    }
+
+    pub async fn update_where(&self, set_clause: &str, condition: &str) -> Result<()> {
+        let sql =
+            format!("ALTER TABLE {} UPDATE {} WHERE {}", self.table_name, set_clause, condition);
+        self.execute_raw(&sql).await
+    }
 }
