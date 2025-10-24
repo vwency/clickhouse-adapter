@@ -7,7 +7,7 @@ services:
       CLICKHOUSE_PORT: 8123
       CLICKHOUSE_USER: default
       CLICKHOUSE_PASSWORD: default
-      CLICKHOUSE_DATABASE: analytics
+      CLICKHOUSE_DATABASE: default
     ports:
       - "8123:8123"
       - "9000:9000"
