@@ -13,8 +13,10 @@ where
     }
 
     pub async fn create_table_if_not_exists(&self) -> Result<()> {
-        let sql = T::create_table_sql().replace("CREATE TABLE", "CREATE TABLE IF NOT EXISTS");
-        self.execute_raw(&sql).await
+        if !self.table_exists().await? {
+            self.create_table().await?;
+        }
+        Ok(())
     }
 
     pub async fn drop_table(&self) -> Result<()> {
@@ -28,22 +30,35 @@ where
     }
 
     pub async fn rename_table(&self, new_name: &str) -> Result<()> {
+        let exists_sql = format!(
+            "SELECT count() FROM system.tables WHERE database = currentDatabase() AND name = '{}'",
+            new_name
+        );
+        let count: u64 = self.client.client().query(&exists_sql).fetch_one::<u64>().await?;
+        if count > 0 {
+            self.drop_table_by_name(new_name).await?;
+        }
         let sql = format!("RENAME TABLE {} TO {}", self.table_name, new_name);
         self.execute_raw(&sql).await
     }
 
     pub async fn add_column(&self, column_name: &str, column_type: &str) -> Result<()> {
-        let sql =
-            format!("ALTER TABLE {} ADD COLUMN {} {}", self.table_name, column_name, column_type);
+        self.create_table_if_not_exists().await?;
+        let sql = format!(
+            "ALTER TABLE {} ADD COLUMN IF NOT EXISTS {} {}",
+            self.table_name, column_name, column_type
+        );
         self.execute_raw(&sql).await
     }
 
     pub async fn drop_column(&self, column_name: &str) -> Result<()> {
-        let sql = format!("ALTER TABLE {} DROP COLUMN {}", self.table_name, column_name);
+        self.create_table_if_not_exists().await?;
+        let sql = format!("ALTER TABLE {} DROP COLUMN IF EXISTS {}", self.table_name, column_name);
         self.execute_raw(&sql).await
     }
 
     pub async fn modify_column(&self, column_name: &str, new_type: &str) -> Result<()> {
+        self.create_table_if_not_exists().await?;
         let sql =
             format!("ALTER TABLE {} MODIFY COLUMN {} {}", self.table_name, column_name, new_type);
         self.execute_raw(&sql).await
@@ -56,5 +71,10 @@ where
         );
         let count: u64 = self.client.client().query(&sql).fetch_one::<u64>().await?;
         Ok(count > 0)
+    }
+
+    async fn drop_table_by_name(&self, name: &str) -> Result<()> {
+        let sql = format!("DROP TABLE IF EXISTS {}", name);
+        self.execute_raw(&sql).await
     }
 }

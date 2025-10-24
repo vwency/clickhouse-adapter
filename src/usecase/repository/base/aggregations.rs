@@ -7,6 +7,12 @@ impl<T, F> Repository<T, F>
 where
     T: Serialize + DeserializeOwned + clickhouse::Row + clickhouse::RowOwned + ClickHouseTable,
 {
+    pub async fn drop_table_if_exists(&self) -> Result<()> {
+        let sql = format!("DROP TABLE IF EXISTS {}", self.table_name);
+        self.client.client().query(&sql).execute().await?;
+        Ok(())
+    }
+
     pub async fn sum<U>(&self, column: &str, use_final: bool) -> Result<U>
     where
         U: DeserializeOwned + clickhouse::Row + clickhouse::RowOwned,

@@ -1,8 +1,7 @@
-# Plans
+# Usage
 
-- Add table creation options
-- Add support native clickhouse features
-- Scale scope
-- architecture changes
-- Batching add
-- Add checks engines compability in code
+[`tests`](./tests) orm.
+
+You can create custom sql queries for speciefic table engine:
+
+[`usecase`](./src/usecase/repository/)
